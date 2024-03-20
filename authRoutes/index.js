@@ -23,6 +23,7 @@ router.post("/login", async (req, res) => {
     res.send({
       code: 200,
       message: "login success",
+      username:data.username,
       accessToken,
       accessTokenExp: 1000 * 60 * 60,
       refreshToken,
@@ -41,11 +42,15 @@ router.post(
   emailValidator,
   async (req, res) => {
     const { username, password, email } = req.body;
+    console.log(username, password, email);
     const hash = Password_Encrypted(password);
     try {
       await CreateUser(email, username, hash);
     } catch (err) {
-      res.status(400).send("db error");
+      res.send({
+        code: 400,
+        message: "User already exist",
+      });
     }
     res.send({
       code: 200,

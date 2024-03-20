@@ -1,6 +1,6 @@
 function emailValidator(req, res, next) {
     const { email } = req.body;
-   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? next() : res.status(400).send("Invalid Email");
+   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? next() : res.send({code:400,message:"email error"});
 }
 
 function passwordValidator(req, res, next) {

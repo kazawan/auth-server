@@ -15,9 +15,13 @@ async function findUser(email) {
 async function UserExistMiddleWire(req, res, next) {
   const { email } = req.body;
 
-  const data = findUser(email);
+  const data = await findUser(email);
+  console.log(data)
   if (data) {
-    res.status(400).send("User already exist");
+    res.send({
+      code: 400,
+      message: "User already exist",
+    });
   } else {
     next();
   }
