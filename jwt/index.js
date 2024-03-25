@@ -8,7 +8,13 @@ function generateToken(payload, expiresIn) {
 }
 
 function verifyToken(token) {
-  return jwt.verify(token, JWT_SECRET);
+  // console.log(jwt.verify(token, JWT_SECRET));
+  if (jwt.verify(token, JWT_SECRET)) {
+    return jwt.verify(token, JWT_SECRET);
+
+  }else{
+    return false
+  }
 }
 
 function verifyAccessTokenMiddleware(req, res, next) {

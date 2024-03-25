@@ -7,6 +7,9 @@ import { isTokenIgnore, ignoreToken } from "../tokenBlackList/index.js";
 
 const router = Router();
 
+const ACCESSTOKEN_EXP_TIME = 1000 * 5;
+const REFRESHTOKEN_EXP_TIME = 1000 * 12;
+
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   console.log('login',email,password)
@@ -15,11 +18,11 @@ router.post("/login", async (req, res) => {
   // 对比密码是否正确
   if (Password_Compare(password, data.password)) {
     // 生成 access token exp = 1h
-    const accessToken = generateToken({ email, username: data.username }, "1h");
+    const accessToken = generateToken({ email, username: data.username }, ACCESSTOKEN_EXP_TIME);
     // 生成 refresh token exp = 7d
     const refreshToken = generateToken(
       { email, username: data.username },
-      "7d"
+      REFRESHTOKEN_EXP_TIME
     );
     res.send({
       code: 200,
@@ -27,10 +30,10 @@ router.post("/login", async (req, res) => {
       username:data.username,
       accessToken,
       accessTokenCreateAt: new Date().getTime(),
-      accessTokenExp: 1000 * 60 * 60,
+      accessTokenExp: ACCESSTOKEN_EXP_TIME,
       refreshToken,
       refreshTokenCreateAt: new Date().getTime(),
-      refreshTokenExp: 1000 * 60 * 60 * 24 * 7,
+      refreshTokenExp: REFRESHTOKEN_EXP_TIME ,
     });
   } else {
     res.status(400).send("password error");
@@ -67,6 +70,7 @@ router.post("/logout", (req, res) => {
   ignoreToken(accessToken);
   ignoreToken(refreshToken);
   // 删除 refresh token
+  console.log("登出", accessToken, refreshToken)
   res.send({
     code: 200,
     message: "logout success",
@@ -75,6 +79,7 @@ router.post("/logout", (req, res) => {
 
 router.post("/refreshToken", async (req, res) => {
   const { refreshToken } = req.body;
+  
   if (isTokenIgnore(refreshToken)) {
     res.status(400).send("token is ignore");
   } else {
@@ -84,11 +89,13 @@ router.post("/refreshToken", async (req, res) => {
         { email: data.email, username: data.username },
         "1h"
       );
+      console.log('请求了新的accessToken',accessToken)
       res.send({
         code: 200,
         message: "refresh token success",
         accessToken,
-        accessTokenExp: 1000 * 60 * 60,
+        accessTokenExp: ACCESSTOKEN_EXP_TIME,
+        accessTokenCreateAt: new Date().getTime(),
       });
     } else {
       res.status(400).send("token is invalid");
