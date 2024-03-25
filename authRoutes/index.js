@@ -9,6 +9,7 @@ const router = Router();
 
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
+  console.log('login',email,password)
   // 先找到对应的email 用户
   const data = await findUser(email);
   // 对比密码是否正确
@@ -25,8 +26,10 @@ router.post("/login", async (req, res) => {
       message: "login success",
       username:data.username,
       accessToken,
+      accessTokenCreateAt: new Date().getTime(),
       accessTokenExp: 1000 * 60 * 60,
       refreshToken,
+      refreshTokenCreateAt: new Date().getTime(),
       refreshTokenExp: 1000 * 60 * 60 * 24 * 7,
     });
   } else {
