@@ -12,6 +12,25 @@ async function findUser(email) {
   return data;
 }
 
+async function findUserMiddleWire(req, res, next) {
+  const { email } = req.body
+  // console.log(email)
+  try{
+    const data = await findUser(email)
+    if(data === null){
+      res.send({
+        code:404,
+        message:"用户不存在"
+      })
+    }else{
+      next()
+    }
+  }
+  catch(err){
+    console.log(err)
+  }
+}
+
 async function UserExistMiddleWire(req, res, next) {
   const { email } = req.body;
 
@@ -40,9 +59,37 @@ async function CreateUser(email, username, password) {
       email: email,
       username: username,
       password: password,
-    },
+      todos: {
+        create: {
+          title: `Hello ${username}!`,
+          completed: true
+        }
+
+
+      }
+    }
   });
   return res;
 }
 
-export { CreateUser, UserExistMiddleWire, findUser };
+
+async function findUserAllTodo(email){
+  try{
+    const todo = await prisma.user.findUnique({
+      where:{
+        email:email
+      },
+      select:{
+        todos:true
+      }
+    })
+    return todo
+  }
+  catch(err){
+    return false
+  }
+}
+
+
+
+export { CreateUser, UserExistMiddleWire, findUser, findUserMiddleWire,findUserAllTodo };

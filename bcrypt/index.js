@@ -9,6 +9,7 @@ const Password_Encrypted = (password) => {
 }
 
 const Password_Compare = (password, hash) => {
+   
     return bcrypt.compareSync(password, hash);
 }
 

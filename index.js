@@ -2,6 +2,7 @@ import express from "express";
 import bodyParser from "body-parser";
 import cors from "cors";
 import router from "./authRoutes/index.js";
+import TodoRoutes from "./todoRoutes/index.js";
 
 //todo 测试用
 import { verifyAccessTokenMiddleware } from "./jwt/index.js";
@@ -20,6 +21,7 @@ app.use(cors());
 app.use(bodyParser.json());
 
 app.use("/auth", router);
+app.use("/todo",TodoRoutes)
 
 app.get("/", (req, res) => {
   res.send("Hello World");

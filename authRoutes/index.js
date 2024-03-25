@@ -1,16 +1,18 @@
 import { Router } from "express";
 import { Password_Encrypted, Password_Compare } from "../bcrypt/index.js";
 import { generateToken, verifyToken } from "../jwt/index.js";
-import { CreateUser, UserExistMiddleWire, findUser } from "../db/index.js";
+import { CreateUser, UserExistMiddleWire, findUser,findUserMiddleWire } from "../db/index.js";
 import { emailValidator } from "../helper/helper.js";
 import { isTokenIgnore, ignoreToken } from "../tokenBlackList/index.js";
 
 const router = Router();
 
-const ACCESSTOKEN_EXP_TIME = 1000 * 5;
-const REFRESHTOKEN_EXP_TIME = 1000 * 12;
+const ACCESSTOKEN_EXP_TIME = 1000 * 60 * 15; // 15min
+const REFRESHTOKEN_EXP_TIME = 1000 * 60 * 60 * 2; // 2h
 
-router.post("/login", async (req, res) => {
+const newTodo = 'welcome to kaza-todo'
+
+router.post("/login",findUserMiddleWire, async (req, res) => {
   const { email, password } = req.body;
   console.log('login',email,password)
   // 先找到对应的email 用户
@@ -34,9 +36,13 @@ router.post("/login", async (req, res) => {
       refreshToken,
       refreshTokenCreateAt: new Date().getTime(),
       refreshTokenExp: REFRESHTOKEN_EXP_TIME ,
+      email:email
     });
   } else {
-    res.status(400).send("password error");
+    res.send({
+      code:404,
+      message:'密码错误'
+    })
   }
 
   // 返回 access token 和 refresh token
@@ -98,7 +104,10 @@ router.post("/refreshToken", async (req, res) => {
         accessTokenCreateAt: new Date().getTime(),
       });
     } else {
-      res.status(400).send("token is invalid");
+      res.send({
+        code:400,
+        message:"token is invalid"
+      });
     }
   }
 });
