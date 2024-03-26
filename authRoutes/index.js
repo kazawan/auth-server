@@ -10,6 +10,11 @@ const router = Router();
 const ACCESSTOKEN_EXP_TIME = 1000 * 60 * 15; // 15min
 const REFRESHTOKEN_EXP_TIME = 1000 * 60 * 60 * 2; // 2h
 
+//! for test
+// const ACCESSTOKEN_EXP_TIME = 1000 * 5; // 5s
+// const REFRESHTOKEN_EXP_TIME = 1000 * 20 // 20s
+
+
 const newTodo = 'welcome to kaza-todo'
 
 router.post("/login",findUserMiddleWire, async (req, res) => {
